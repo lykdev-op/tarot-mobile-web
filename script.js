@@ -1,5 +1,5 @@
 // ── FORMATIONS ────────────────────────────────────────────────────────────
-const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzoxvpJUEjYtnux6Y3EWX9C6gSgJgSTJGBIhrRM8qjdJhw23DOjXpJojBSW_6YtwYpDQQ/exec";
+const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwkIpYqt_UPkX82oJQa4n-89C0iHyLubwJfBUe6phCemRObAH8ZSmtEhfHokE2YL822Yg/exec";
 async function getReadingFromBackend(payload) {
   const response = await fetch(APPS_SCRIPT_WEB_APP_URL, {
     method: "POST",
