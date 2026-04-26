@@ -1,4 +1,20 @@
 // ── FORMATIONS ────────────────────────────────────────────────────────────
+const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzoxvpJUEjYtnux6Y3EWX9C6gSgJgSTJGBIhrRM8qjdJhw23DOjXpJojBSW_6YtwYpDQQ/exec";
+async function getReadingFromBackend(payload) {
+  const response = await fetch(APPS_SCRIPT_WEB_APP_URL, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+
+  const data = await response.json();
+
+  if (!data.success) {
+    throw new Error(data.error || "Reading failed");
+  }
+
+  return data.html;
+}
+
 const FORMATIONS = [
   {
     id: 'single',
@@ -428,23 +444,15 @@ function fetchReading() {
     formation: appState.formation
   };
 
-  fetch('/api/reading', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-    .then(function (res) {
-      if (!res.ok) throw new Error('Server returned ' + res.status);
-      return res.json();
-    })
-    .then(function (data) {
+  getReadingFromBackend(payload)
+    .then(function (html) {
       loadingEl.style.display = 'none';
-      document.getElementById('reading-body').innerHTML = data.html;
+      document.getElementById('reading-body').innerHTML = html;
       contentEl.classList.add('visible');
     })
     .catch(function (err) {
       loadingEl.style.display = 'none';
-      errorEl.textContent = '⚠ The Oracle is silent: ' + (err.message || 'No backend configured.');
+      errorEl.textContent = '⚠ The Oracle is silent: ' + (err.message || 'Backend unreachable.');
       errorEl.classList.add('visible');
     });
 }
