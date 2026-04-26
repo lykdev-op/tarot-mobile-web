@@ -1,4 +1,3 @@
-<script>
 const TAROT_DECK = [
   // ── MAJOR ARCANA ──────────────────────────────────────────────────────────
   { name: "The Fool",            suit: "major", num: 0,  aliases: ["0","zero","fool","the fool"] },
@@ -88,4 +87,3 @@ const TAROT_DECK = [
   { name: "Queen of Pentacles",  suit: "pentacles", num: 13, aliases: ["13","xiii","queen","queen of pentacles","queen of coins"] },
   { name: "King of Pentacles",   suit: "pentacles", num: 14, aliases: ["14","xiv","king","king of pentacles","king of coins"] }
 ];
-</script>

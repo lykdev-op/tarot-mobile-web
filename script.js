@@ -1,4 +1,3 @@
-<script>
 // ── FORMATIONS ────────────────────────────────────────────────────────────
 const FORMATIONS = [
   {
@@ -429,18 +428,25 @@ function fetchReading() {
     formation: appState.formation
   };
 
-  google.script.run
-    .withSuccessHandler(function (data) {
+  fetch('/api/reading', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+    .then(function (res) {
+      if (!res.ok) throw new Error('Server returned ' + res.status);
+      return res.json();
+    })
+    .then(function (data) {
       loadingEl.style.display = 'none';
       document.getElementById('reading-body').innerHTML = data.html;
       contentEl.classList.add('visible');
     })
-    .withFailureHandler(function (err) {
+    .catch(function (err) {
       loadingEl.style.display = 'none';
-      errorEl.textContent = '⚠ The Oracle is silent: ' + (err.message || 'Unknown error. Check the OPENAI_API_KEY Script Property.');
+      errorEl.textContent = '⚠ The Oracle is silent: ' + (err.message || 'No backend configured.');
       errorEl.classList.add('visible');
-    })
-    .getTarotReading(payload);
+    });
 }
 
 // ── RESET ─────────────────────────────────────────────────────────────────
@@ -492,4 +498,3 @@ document.addEventListener('DOMContentLoaded', function () {
   updateFormationDisplay();
   updateSubmitButton();
 });
-</script>
