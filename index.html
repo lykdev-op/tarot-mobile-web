@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <?!= include('Styles') ?>
+</head>
+<body>
+<div id="app">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PAGE 1 — QUESTION CATEGORY SELECTION
+  ════════════════════════════════════════════════════════════════ -->
+  <div id="page1" class="page">
+    <header class="page-header">
+      <div class="header-ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+      <h1>The Oracle Awaits</h1>
+      <p>Choose the realm of your inquiry</p>
+    </header>
+
+    <div class="category-grid">
+
+      <!-- General / Life Path -->
+      <button class="category-tile tile-general" data-category="general">
+        <svg class="tile-svg" viewBox="0 0 70 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1.5" y="1.5" width="67" height="87" rx="4" stroke="#c9a84c" stroke-width="1"/>
+          <rect x="4" y="4" width="62" height="82" rx="3" stroke="#c9a84c" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.5"/>
+          <!-- Sun circle -->
+          <circle cx="35" cy="44" r="14" stroke="#c9a84c" stroke-width="1.5" fill="rgba(201,168,76,0.07)"/>
+          <circle cx="35" cy="44" r="7" fill="rgba(201,168,76,0.18)" stroke="#c9a84c" stroke-width="1"/>
+          <!-- Rays -->
+          <line x1="35" y1="24" x2="35" y2="18" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="35" y1="64" x2="35" y2="70" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="15" y1="44" x2="9"  y2="44" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="55" y1="44" x2="61" y2="44" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="21" y1="30" x2="17" y2="26" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="49" y1="58" x2="53" y2="62" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="49" y1="30" x2="53" y2="26" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="21" y1="58" x2="17" y2="62" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- Corner stars -->
+          <text x="10" y="17" font-size="8" fill="#c9a84c" text-anchor="middle" font-family="serif">✦</text>
+          <text x="60" y="17" font-size="8" fill="#c9a84c" text-anchor="middle" font-family="serif">✦</text>
+          <!-- Base ornament -->
+          <text x="35" y="84" font-size="7" fill="rgba(201,168,76,0.45)" text-anchor="middle" font-family="serif">✦ ✦ ✦</text>
+        </svg>
+        <span class="tile-label">General</span>
+        <span class="tile-sublabel">Life Path</span>
+      </button>
+
+      <!-- Work & Career -->
+      <button class="category-tile tile-work" data-category="work">
+        <svg class="tile-svg" viewBox="0 0 70 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1.5" y="1.5" width="67" height="87" rx="4" stroke="#5d82c8" stroke-width="1"/>
+          <rect x="4" y="4" width="62" height="82" rx="3" stroke="#5d82c8" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.5"/>
+          <!-- Wand staff -->
+          <line x1="35" y1="72" x2="35" y2="22" stroke="#8aaae0" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- Flame at top -->
+          <path d="M32 25 Q35 13 38 25 Q41 16 35 22 Q29 16 32 25Z" fill="rgba(100,140,210,0.35)" stroke="#8aaae0" stroke-width="1"/>
+          <!-- Wand bands -->
+          <rect x="31" y="40" width="8" height="2" rx="1" fill="#5d82c8" opacity="0.7"/>
+          <rect x="31" y="52" width="8" height="2" rx="1" fill="#5d82c8" opacity="0.7"/>
+          <!-- Small stars around wand -->
+          <text x="17" y="37" font-size="9" fill="rgba(93,130,200,0.8)" text-anchor="middle" font-family="serif">✦</text>
+          <text x="53" y="37" font-size="9" fill="rgba(93,130,200,0.8)" text-anchor="middle" font-family="serif">✦</text>
+          <text x="17" y="57" font-size="7" fill="rgba(93,130,200,0.6)" text-anchor="middle" font-family="serif">★</text>
+          <text x="53" y="57" font-size="7" fill="rgba(93,130,200,0.6)" text-anchor="middle" font-family="serif">★</text>
+          <!-- Corner dots -->
+          <circle cx="10" cy="11" r="2.5" stroke="#5d82c8" stroke-width="0.8" fill="none"/>
+          <circle cx="60" cy="11" r="2.5" stroke="#5d82c8" stroke-width="0.8" fill="none"/>
+          <circle cx="10" cy="79" r="2.5" stroke="#5d82c8" stroke-width="0.8" fill="none"/>
+          <circle cx="60" cy="79" r="2.5" stroke="#5d82c8" stroke-width="0.8" fill="none"/>
+          <text x="35" y="84" font-size="7" fill="rgba(93,130,200,0.4)" text-anchor="middle" font-family="serif">✦ ✦ ✦</text>
+        </svg>
+        <span class="tile-label">Work</span>
+        <span class="tile-sublabel">Career &amp; Ambition</span>
+      </button>
+
+      <!-- Romantic Relationships -->
+      <button class="category-tile tile-romance" data-category="romance">
+        <svg class="tile-svg" viewBox="0 0 70 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1.5" y="1.5" width="67" height="87" rx="4" stroke="#c84055" stroke-width="1"/>
+          <rect x="4" y="4" width="62" height="82" rx="3" stroke="#c84055" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.5"/>
+          <!-- Left cup -->
+          <path d="M18 68 L14 76 Q18 79 22 76 L18 68Z" stroke="#e07080" stroke-width="1" fill="rgba(200,64,85,0.15)"/>
+          <rect x="14" y="63" width="8" height="5" rx="1" stroke="#e07080" stroke-width="1" fill="rgba(200,64,85,0.12)"/>
+          <line x1="18" y1="76" x2="18" y2="79" stroke="#e07080" stroke-width="1"/>
+          <line x1="14" y1="79" x2="22" y2="79" stroke="#e07080" stroke-width="1"/>
+          <!-- Right cup -->
+          <path d="M52 68 L48 76 Q52 79 56 76 L52 68Z" stroke="#e07080" stroke-width="1" fill="rgba(200,64,85,0.15)"/>
+          <rect x="48" y="63" width="8" height="5" rx="1" stroke="#e07080" stroke-width="1" fill="rgba(200,64,85,0.12)"/>
+          <line x1="52" y1="76" x2="52" y2="79" stroke="#e07080" stroke-width="1"/>
+          <line x1="48" y1="79" x2="56" y2="79" stroke="#e07080" stroke-width="1"/>
+          <!-- Heart -->
+          <path d="M35 46 C35 41 28 37 25 42 C22 47 28 52 35 60 C42 52 48 47 45 42 C42 37 35 41 35 46Z"
+                stroke="#e07080" stroke-width="1.5" fill="rgba(200,64,85,0.18)"/>
+          <!-- Infinity-loop connection between cups -->
+          <path d="M22 55 Q28 49 35 55 Q42 61 48 55" stroke="#e07080" stroke-width="1" fill="none" opacity="0.7"/>
+          <!-- Stars -->
+          <text x="10" y="18" font-size="8" fill="rgba(200,64,85,0.7)" text-anchor="middle" font-family="serif">✦</text>
+          <text x="60" y="18" font-size="8" fill="rgba(200,64,85,0.7)" text-anchor="middle" font-family="serif">✦</text>
+          <text x="35" y="84" font-size="7" fill="rgba(200,64,85,0.4)" text-anchor="middle" font-family="serif">♡ ♡ ♡</text>
+        </svg>
+        <span class="tile-label">Romance</span>
+        <span class="tile-sublabel">Love &amp; Relationships</span>
+      </button>
+
+      <!-- Friendships -->
+      <button class="category-tile tile-friends" data-category="friends">
+        <svg class="tile-svg" viewBox="0 0 70 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1.5" y="1.5" width="67" height="87" rx="4" stroke="#2a9090" stroke-width="1"/>
+          <rect x="4" y="4" width="62" height="82" rx="3" stroke="#2a9090" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.5"/>
+          <!-- Three raised cups -->
+          <!-- Left cup -->
+          <path d="M17 63 L13 71 Q17 74 21 71 L17 63Z" stroke="#40b8b8" stroke-width="1" fill="rgba(42,144,144,0.18)"/>
+          <rect x="13" y="58" width="8" height="5" rx="1" stroke="#40b8b8" stroke-width="1" fill="rgba(42,144,144,0.12)"/>
+          <line x1="17" y1="71" x2="17" y2="74" stroke="#40b8b8" stroke-width="1"/>
+          <line x1="13" y1="74" x2="21" y2="74" stroke="#40b8b8" stroke-width="1"/>
+          <!-- Center cup (slightly higher) -->
+          <path d="M35 57 L31 65 Q35 68 39 65 L35 57Z" stroke="#40b8b8" stroke-width="1" fill="rgba(42,144,144,0.22)"/>
+          <rect x="31" y="52" width="8" height="5" rx="1" stroke="#40b8b8" stroke-width="1" fill="rgba(42,144,144,0.15)"/>
+          <line x1="35" y1="65" x2="35" y2="74" stroke="#40b8b8" stroke-width="1"/>
+          <line x1="31" y1="74" x2="39" y2="74" stroke="#40b8b8" stroke-width="1"/>
+          <!-- Right cup -->
+          <path d="M53 63 L49 71 Q53 74 57 71 L53 63Z" stroke="#40b8b8" stroke-width="1" fill="rgba(42,144,144,0.18)"/>
+          <rect x="49" y="58" width="8" height="5" rx="1" stroke="#40b8b8" stroke-width="1" fill="rgba(42,144,144,0.12)"/>
+          <line x1="53" y1="71" x2="53" y2="74" stroke="#40b8b8" stroke-width="1"/>
+          <line x1="49" y1="74" x2="57" y2="74" stroke="#40b8b8" stroke-width="1"/>
+          <!-- Crescent moon above -->
+          <path d="M35 34 A12 12 0 1 1 35.01 34" stroke="#40b8b8" stroke-width="1.5" fill="none" stroke-dasharray="1000"/>
+          <path d="M35 22 A8 10 0 0 0 35 42" stroke="#40b8b8" stroke-width="1" fill="rgba(42,144,144,0.1)"/>
+          <!-- Stars -->
+          <text x="10" y="18" font-size="8" fill="rgba(42,144,144,0.7)" text-anchor="middle" font-family="serif">★</text>
+          <text x="60" y="18" font-size="8" fill="rgba(42,144,144,0.7)" text-anchor="middle" font-family="serif">★</text>
+          <text x="35" y="84" font-size="7" fill="rgba(42,144,144,0.4)" text-anchor="middle" font-family="serif">✦ ✦ ✦</text>
+        </svg>
+        <span class="tile-label">Friendships</span>
+        <span class="tile-sublabel">Bonds &amp; Community</span>
+      </button>
+
+      <!-- Family -->
+      <button class="category-tile tile-family" data-category="family">
+        <svg class="tile-svg" viewBox="0 0 70 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1.5" y="1.5" width="67" height="87" rx="4" stroke="#c07a2a" stroke-width="1"/>
+          <rect x="4" y="4" width="62" height="82" rx="3" stroke="#c07a2a" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.5"/>
+          <!-- Tree trunk -->
+          <rect x="32" y="55" width="6" height="18" rx="1" fill="rgba(192,122,42,0.3)" stroke="#d89040" stroke-width="1"/>
+          <!-- Ground roots -->
+          <path d="M32 70 Q25 72 22 76" stroke="#c07a2a" stroke-width="1" fill="none"/>
+          <path d="M38 70 Q45 72 48 76" stroke="#c07a2a" stroke-width="1" fill="none"/>
+          <line x1="25" y1="74" x2="45" y2="74" stroke="#c07a2a" stroke-width="1"/>
+          <!-- Tree canopy - three overlapping circles -->
+          <circle cx="35" cy="38" r="14" fill="rgba(192,122,42,0.1)" stroke="#d89040" stroke-width="1"/>
+          <circle cx="26" cy="46" r="10" fill="rgba(192,122,42,0.1)" stroke="#d89040" stroke-width="0.8"/>
+          <circle cx="44" cy="46" r="10" fill="rgba(192,122,42,0.1)" stroke="#d89040" stroke-width="0.8"/>
+          <!-- Pentacle star in canopy center -->
+          <text x="35" y="42" font-size="12" fill="rgba(192,122,42,0.6)" text-anchor="middle" font-family="serif">✦</text>
+          <!-- Corner ornaments -->
+          <circle cx="10" cy="11" r="2.5" stroke="#c07a2a" stroke-width="0.8" fill="rgba(192,122,42,0.15)"/>
+          <circle cx="60" cy="11" r="2.5" stroke="#c07a2a" stroke-width="0.8" fill="rgba(192,122,42,0.15)"/>
+          <text x="35" y="84" font-size="7" fill="rgba(192,122,42,0.4)" text-anchor="middle" font-family="serif">✦ ✦ ✦</text>
+        </svg>
+        <span class="tile-label">Family</span>
+        <span class="tile-sublabel">Roots &amp; Home</span>
+      </button>
+
+      <!-- Spiritual & Purpose -->
+      <button class="category-tile tile-spiritual" data-category="spiritual">
+        <svg class="tile-svg" viewBox="0 0 70 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1.5" y="1.5" width="67" height="87" rx="4" stroke="#8855cc" stroke-width="1"/>
+          <rect x="4" y="4" width="62" height="82" rx="3" stroke="#8855cc" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.5"/>
+          <!-- Triangle -->
+          <path d="M35 20 L60 65 L10 65 Z" stroke="#aa77ee" stroke-width="1.5" fill="rgba(136,85,204,0.07)"/>
+          <!-- Inner triangle (pointing down) -->
+          <path d="M35 58 L48 36 L22 36 Z" stroke="#aa77ee" stroke-width="0.8" fill="rgba(136,85,204,0.06)" opacity="0.7"/>
+          <!-- Eye in center -->
+          <ellipse cx="35" cy="44" rx="9" ry="6" stroke="#aa77ee" stroke-width="1" fill="rgba(136,85,204,0.1)"/>
+          <circle cx="35" cy="44" r="3.5" fill="rgba(136,85,204,0.35)" stroke="#aa77ee" stroke-width="0.8"/>
+          <circle cx="35" cy="44" r="1.5" fill="#aa77ee" opacity="0.8"/>
+          <!-- Stars orbiting -->
+          <text x="35" y="17" font-size="7" fill="rgba(170,119,238,0.8)" text-anchor="middle" font-family="serif">★</text>
+          <text x="10" y="38" font-size="6" fill="rgba(170,119,238,0.6)" text-anchor="middle" font-family="serif">✦</text>
+          <text x="60" y="38" font-size="6" fill="rgba(170,119,238,0.6)" text-anchor="middle" font-family="serif">✦</text>
+          <text x="22" y="72" font-size="6" fill="rgba(170,119,238,0.5)" text-anchor="middle" font-family="serif">✦</text>
+          <text x="48" y="72" font-size="6" fill="rgba(170,119,238,0.5)" text-anchor="middle" font-family="serif">✦</text>
+          <text x="35" y="84" font-size="7" fill="rgba(136,85,204,0.4)" text-anchor="middle" font-family="serif">✦ ✦ ✦</text>
+        </svg>
+        <span class="tile-label">Spiritual</span>
+        <span class="tile-sublabel">Purpose &amp; Soul</span>
+      </button>
+
+    </div><!-- /category-grid -->
+  </div><!-- /page1 -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PAGE 2 — CARD SELECTION
+  ════════════════════════════════════════════════════════════════ -->
+  <div id="page2" class="page">
+    <button class="back-btn" onclick="navigateTo(1)">Back to Categories</button>
+
+    <header class="page-header">
+      <div class="header-ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+      <h1>Choose Your Cards</h1>
+      <p>
+        Reading for: <span id="context-category-label" style="color:var(--gold);font-family:var(--font-heading);font-size:0.85rem;letter-spacing:0.06em;"></span>
+      </p>
+    </header>
+
+    <div class="page2-inner">
+
+      <!-- Search -->
+      <div class="search-wrapper">
+        <label class="search-label" for="card-search">Search &amp; Add a Card</label>
+        <input
+          type="text"
+          id="card-search"
+          class="search-input"
+          placeholder="Type a card name, suit, or number (e.g. 3, cups, three of swords…)"
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <ul id="search-results" class="search-results" role="listbox"></ul>
+      </div>
+
+      <!-- Formation bar -->
+      <div class="formation-bar">
+        <div class="formation-info">
+          <span class="formation-bar-label">Current Spread</span>
+          <span class="formation-current-name" id="current-formation-name">Three Card: Past · Present · Future</span>
+        </div>
+        <button class="formation-btn" id="formation-modal-btn">Change Formation</button>
+      </div>
+
+      <!-- Card slots grid -->
+      <div id="card-slots" class="card-slots"></div>
+
+      <!-- Status + submit -->
+      <p class="cards-status" id="cards-status">0 / 3 cards selected</p>
+
+      <button class="submit-btn" id="submit-reading-btn" onclick="submitReading()" disabled>
+        Select All 3 Cards to Continue
+      </button>
+
+    </div><!-- /page2-inner -->
+  </div><!-- /page2 -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PAGE 3 — THE READING
+  ════════════════════════════════════════════════════════════════ -->
+  <div id="page3" class="page">
+    <button class="back-btn" onclick="navigateTo(2)">Back to Card Selection</button>
+
+    <header class="page-header">
+      <div class="header-ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+      <h1>The Oracle Speaks</h1>
+      <p>The cards have been laid. The spirits are stirring.</p>
+    </header>
+
+    <div class="reading-page-inner">
+
+      <!-- Loading spinner -->
+      <div id="reading-loading" style="display:none;">
+        <div class="sigil-container">
+          <div class="sigil-ring"></div>
+          <div class="sigil-ring-2"></div>
+          <span class="sigil-center">✦</span>
+        </div>
+        <div class="loading-text">The Oracle Stirs&hellip;</div>
+      </div>
+
+      <!-- Error box -->
+      <div id="reading-error"></div>
+
+      <!-- Reading output -->
+      <div id="reading-content">
+        <div class="reading-meta">
+          <span class="reading-meta-tag" id="reading-category-tag"></span>
+          <span class="reading-meta-tag" id="reading-formation-tag"></span>
+        </div>
+        <div class="reading-divider">✦ &nbsp; ✦ &nbsp; ✦</div>
+        <div id="reading-body"></div>
+        <div class="reading-divider" style="margin-top:2rem;">— finis —</div>
+        <div class="reading-actions">
+          <button class="start-over-btn" onclick="resetApp()">✦ Ask the Oracle Again</button>
+        </div>
+      </div>
+
+    </div><!-- /reading-page-inner -->
+  </div><!-- /page3 -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FORMATION MODAL
+  ════════════════════════════════════════════════════════════════ -->
+  <div id="formation-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Choose a spread formation">
+    <div class="modal-box">
+      <div class="modal-title">Choose Your Spread</div>
+      <ul class="formation-list" id="formation-list"></ul>
+      <button class="modal-close-btn" id="formation-modal-close">Close</button>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div id="toast"></div>
+
+</div><!-- /app -->
+
+<?!= include('CardData') ?>
+<?!= include('JavaScript') ?>
+</body>
+</html>
