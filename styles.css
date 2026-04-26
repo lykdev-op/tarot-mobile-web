@@ -776,7 +776,7 @@ body::before {
 
 /* Reddit-post-style wrapper */
 #reading-content.visible::before {
-  content: 'r/tarot  •  Posted by u/TheOracle  •  🔮';
+  content: 'r/tarot  •  Posted by TheOracle  •  🔮';
   display: block;
   background: rgba(255,100,0,0.05);
   border: 1px solid rgba(255,100,0,0.12);
