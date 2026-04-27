@@ -103,7 +103,7 @@ const TRANSLATIONS = {
     card_count:  function(n) { return n + ' 張牌'; },
     oracle_silent: function(msg) { return '⚠ 神諭沉默：' + msg; },
     backend_unreachable: '後端無法連接。',
-    suit_cups: '聖盃', suit_wands: '權杖', suit_swords: '寶劍', suit_pentacles: '星幣',
+    suit_cups: '聖盃', suit_wands: '權杖', suit_swords: '寶劍', suit_pentacles: '錢幣',
     category_labels: {
       general: '通用 / 人生道路', work: '工作與事業',
       romance: '浪漫關係', friends: '友誼',
@@ -539,7 +539,14 @@ function fetchReading() {
   const payload = {
     lang:      currentLang,
     category:  appState.categoryLabel,
-    cards:     appState.selectedCards,
+    cards:     appState.selectedCards.map(function(entry) {
+      return {
+        reversed: entry.reversed,
+        card: Object.assign({}, entry.card, {
+          displayName: currentLang === 'zh-TW' && entry.card.zhName ? entry.card.zhName : entry.card.name
+        })
+      };
+    }),
     formation: localizedFormation
   };
 
