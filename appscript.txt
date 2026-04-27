@@ -1,0 +1,289 @@
+// ════════════════════════════════════════════════════════════════════════════
+// Tarot Reading Backend — Google Apps Script
+// Paste the full contents of this file into your Apps Script project.
+// ════════════════════════════════════════════════════════════════════════════
+
+function doPost(e) {
+  try {
+    if (!e || !e.postData || !e.postData.contents) {
+      throw new Error('No request body received.');
+    }
+
+    var payload = JSON.parse(e.postData.contents);
+    var result = getTarotReading(payload);
+
+    return jsonResponse({
+      success: true,
+      html: result.html
+    });
+
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      error: error.message
+    });
+  }
+}
+
+function doGet(e) {
+  return jsonResponse({
+    success: true,
+    message: 'CardReadBackend is running.'
+  });
+}
+
+function jsonResponse(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getTarotReading(payload) {
+  validatePayload(payload);
+
+  var apiKey = PropertiesService
+    .getScriptProperties()
+    .getProperty('OPENAI_API_KEY');
+
+  if (!apiKey) {
+    throw new Error('OPENAI_API_KEY is not set in Script Properties.');
+  }
+
+  var prompt = payload.lang === 'zh-TW'
+    ? buildPromptZh(payload)
+    : buildPromptEn(payload);
+
+  var response = UrlFetchApp.fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'post',
+    headers: {
+      Authorization: 'Bearer ' + apiKey,
+      'Content-Type': 'application/json'
+    },
+    payload: JSON.stringify({
+      model: 'gpt-4o',
+      max_tokens: 2048,
+      messages: [
+        {
+          role: 'user',
+          content: prompt
+        }
+      ]
+    }),
+    muteHttpExceptions: true
+  });
+
+  var statusCode = response.getResponseCode();
+  var responseText = response.getContentText();
+
+  if (statusCode !== 200) {
+    throw new Error('OpenAI API returned status ' + statusCode + ': ' + responseText);
+  }
+
+  var json = JSON.parse(responseText);
+
+  if (!json.choices || !json.choices[0] || !json.choices[0].message) {
+    throw new Error('Unexpected OpenAI response format.');
+  }
+
+  var rawText = json.choices[0].message.content;
+
+  return {
+    html: formatReadingAsHtml(rawText),
+    text: rawText
+  };
+}
+
+function validatePayload(payload) {
+  if (!payload) {
+    throw new Error('Missing payload.');
+  }
+
+  if (!payload.category) {
+    throw new Error('Missing category.');
+  }
+
+  if (!payload.formation || !payload.formation.name) {
+    throw new Error('Missing formation.');
+  }
+
+  if (!payload.cards || !Array.isArray(payload.cards) || payload.cards.length === 0) {
+    throw new Error('Missing cards.');
+  }
+}
+
+// ── ENGLISH PROMPT ────────────────────────────────────────────────────────────
+// Tone: Reddit roast mode — sarcastic, sharp, but genuine tarot wisdom underneath.
+
+function buildPromptEn(payload) {
+  var cardLines = payload.cards.map(function(entry, i) {
+    var positionName = 'Position ' + (i + 1);
+
+    if (
+      payload.formation &&
+      payload.formation.positions &&
+      payload.formation.positions[i]
+    ) {
+      positionName = payload.formation.positions[i];
+    }
+
+    var cardName = entry.card && entry.card.name
+      ? entry.card.name
+      : 'Unknown Card';
+
+    return (
+      '  Position ' +
+      (i + 1) +
+      ' — ' +
+      positionName +
+      ': ' +
+      cardName +
+      (entry.reversed ? ' (Reversed)' : '')
+    );
+  }).join('\n');
+
+  var userQuestion = payload.userQuestion
+    ? 'The querent\'s specific question: ' + payload.userQuestion
+    : 'The querent did not provide a specific written question.';
+
+  return [
+    'You are a tarot reader channeling the deep wisdom of Rachel Pollack (Seventy-Eight Degrees of Wisdom), Stefanie Caponi (Guided Tarot), and Liz Dean (The Ultimate Guide to Tarot).',
+    'You know every card\'s symbolism, traditional meaning, reversed nuances, and spread dynamics inside out.',
+    '',
+    'The querent\'s topic: ' + payload.category,
+    userQuestion,
+    'Spread used: ' + payload.formation.name,
+    '',
+    'Cards drawn (in position order):',
+    cardLines,
+    '',
+    '---',
+    '',
+    'Deliver this tarot reading EXCLUSIVELY in Reddit roast mode. Follow these rules precisely:',
+    '',
+    '1. Open with an ALL-CAPS Reddit-style post title on its own line.',
+    'Example: "PULLING THE TOWER CARD THREE TIMES THIS WEEK?? (not clickbait)"',
+    '',
+    '2. Start the reading body with: "So I pulled these cards for you and I am not okay."',
+    '',
+    '3. For EACH card in position order, write a section with this exact header format: **[Position Name]: [Card Name]**. Add " (Reversed)" after the card name if applicable.',
+    'Under each header, write 2–3 sentences of genuine interpretation, then add one sarcastic Reddit-style observation.',
+    '',
+    'Use Reddit-isms naturally: r/YourLife, big yikes, RemindMe! 6 months, this is the way, edit: wow this blew up, certified YTA behavior.',
+    '',
+    '4. End with a **Overall Verdict:** section that synthesizes all cards in context of the querent\'s topic.',
+    '',
+    '5. Close with a optimistically pessimistic Reddit edit in italics.',
+    '',
+    '6. Do not break character. No "As an AI..." disclaimers. No apologies. You are the Oracle of Reddit.',
+    '',
+    '7. Total length: 450–700 words. Make it spicy, but make the tarot wisdom genuinely shine through the roasting.'
+  ].join('\n');
+}
+
+// ── CHINESE PROMPT ────────────────────────────────────────────────────────────
+// Tone: 蔡永康訪問風格 × 辣雞湯 — warm, candid, slightly sharp, never sycophantic.
+// Like a trusted friend who's done their tarot homework and won't sugarcoat things.
+// Output must be in Traditional Chinese (繁體中文).
+
+function buildPromptZh(payload) {
+  var cardLines = payload.cards.map(function(entry, i) {
+    var positionName = '位置 ' + (i + 1);
+
+    if (
+      payload.formation &&
+      payload.formation.positions &&
+      payload.formation.positions[i]
+    ) {
+      positionName = payload.formation.positions[i];
+    }
+
+    var cardName = entry.card && entry.card.name
+      ? entry.card.name
+      : 'Unknown Card';
+
+    return (
+      '  位置 ' +
+      (i + 1) +
+      ' — ' +
+      positionName +
+      '：' +
+      cardName +
+      (entry.reversed ? '（逆位）' : '')
+    );
+  }).join('\n');
+
+  var userQuestion = payload.userQuestion
+    ? '問卜者的具體問題：' + payload.userQuestion
+    : '問卜者沒有提供具體問題。';
+
+  return [
+    '你是一位直接、溫暖、不說廢話的塔羅解讀者。',
+    '',
+    '你的風格融合兩種氣質：',
+    '• 蔡永康式的訪問溫度——像老朋友坐下來聊，真誠、有深度，問你不敢問自己的問題。',
+    '• 辣雞湯精神——不給甜甜的假安慰，說真正需要聽到的那句話，有時候會有點刺，但刺完之後你會感謝。',
+    '',
+    '你對每一張塔羅牌的象徵意義、正逆位解讀、牌陣動態都瞭若指掌。',
+    '',
+    '問卜者的主題：' + payload.category,
+    userQuestion,
+    '使用的牌陣：' + payload.formation.name,
+    '',
+    '抽到的牌（依位置順序）：',
+    cardLines,
+    '',
+    '---',
+    '',
+    '請用繁體中文完成這次塔羅解讀。請嚴格遵照以下格式與風格：',
+    '',
+    '1. 用一句開場白破題，語氣像朋友開口說「好，我說實話啊」，直接切入問卜者的處境，不要客套。',
+    '   可以帶一點幽默，但不誇張。',
+    '',
+    '2. 為每一張牌依序寫一個段落，標題格式為：**[位置名稱]：[牌名]**（如為逆位，在牌名後加上「（逆位）」）。',
+    '   每個段落包含：',
+    '   • 2至3句真正的塔羅解讀，結合牌的象徵與問卜者的處境。',
+    '   • 一句「直球觀察」——像朋友說出那句你心裡知道但不敢承認的話，可以辣，但要有溫度。',
+    '',
+    '3. 結尾寫一個 **整體觀察：** 段落，把所有牌串起來，給出針對問卜者主題的整合建議。',
+    '',
+    '4. 最後用一句「金句」收尾，放在獨立一行，用斜體標示。',
+    '   這句話要簡短、有力，像是那種你抄下來貼在牆上的話，但不能是老生常談。',
+    '',
+    '5. 全程不要打破角色，不要說「作為AI」或任何免責聲明。你就是那個懂牌、敢說真話的朋友。',
+    '',
+    '6. 總字數：400至600字之間。要夠直、夠有溫度，讓人讀完之後覺得「幹，說的是我」。'
+  ].join('\n');
+}
+
+// ── HTML FORMATTER ────────────────────────────────────────────────────────────
+
+function formatReadingAsHtml(text) {
+  var html = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  html = html.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+
+  var blocks = html.split(/\n\n+/);
+
+  var parts = blocks.map(function(block) {
+    block = block.trim();
+
+    if (!block) {
+      return '';
+    }
+
+    if (/^<strong>[^<]+<\/strong>$/.test(block)) {
+      return '<h3 class="reading-section-header">' + block + '</h3>';
+    }
+
+    block = block.replace(/\n/g, '<br>');
+    return '<p>' + block + '</p>';
+  });
+
+  return parts.filter(function(p) {
+    return p;
+  }).join('\n');
+}

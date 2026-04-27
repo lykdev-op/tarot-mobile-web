@@ -1,5 +1,5 @@
 // ── BACKEND ───────────────────────────────────────────────────────────────
-const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyI1aAv9CHrr6iAckRbM_qcpWfiKFMePIRm1xVadm7ACICNllCA4mFk7eMWo3PTZlwQIA/exec";
+const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwSm05J9K1PAeM6uxmLOnSxoIB4hnfBqake-hTwaN-R6iguMOHLSZzjfOOxn99fxODc2g/exec";
 async function getReadingFromBackend(payload) {
   const response = await fetch(APPS_SCRIPT_WEB_APP_URL, {
     method: "POST",
@@ -165,7 +165,11 @@ function applyI18n() {
 function switchLang(lang) {
   currentLang = lang;
   localStorage.setItem('tarot-lang', lang);
-  applyI18n();
+  if (document.getElementById('page3').classList.contains('active')) {
+    resetApp();
+  } else {
+    applyI18n();
+  }
 }
 
 // ── FORMATIONS ────────────────────────────────────────────────────────────
@@ -224,22 +228,31 @@ function normalizeQuery(raw) {
   return q;
 }
 
+function getCardDisplayName(card) {
+  if (currentLang === 'zh-TW' && card.zhName) return card.zhName;
+  return card.name;
+}
+
 function searchCards(rawQuery) {
   if (!rawQuery || rawQuery.trim().length < 1) return [];
   const q = normalizeQuery(rawQuery);
+  const rawQ = rawQuery.trim(); // kept as-is for Chinese substring matching
   const queryTokens = q.split(/\s+/).filter(Boolean);
 
   const tier1 = [], tier2 = [], tier3 = [];
 
   for (const card of TAROT_DECK) {
     const nameLower = card.name.toLowerCase();
+    const zhName = card.zhName || '';
+    const zhAliases = card.zhAliases || [];
     const allText = nameLower + ' ' + card.aliases.join(' ');
+    const allTextFull = allText + ' ' + zhName + ' ' + zhAliases.join(' ');
 
-    if (nameLower.includes(q)) {
+    if (nameLower.includes(q) || zhName.includes(rawQ)) {
       tier1.push(card);
-    } else if (card.aliases.some(a => a.includes(q))) {
+    } else if (card.aliases.some(a => a.includes(q)) || zhAliases.some(a => a.includes(rawQ))) {
       tier2.push(card);
-    } else if (queryTokens.length > 0 && queryTokens.every(token => allText.includes(token))) {
+    } else if (queryTokens.length > 0 && queryTokens.every(token => allTextFull.includes(token))) {
       tier3.push(card);
     }
   }
@@ -314,7 +327,7 @@ function initSearch() {
       } else {
         results.innerHTML = cards.map(card => {
           return `<li data-name="${escHtml(card.name)}" role="option" tabindex="-1">
-            <span>${escHtml(card.name)}</span>
+            <span>${escHtml(getCardDisplayName(card))}</span>
             <span class="suit-badge">${escHtml(getSuitLabel(card.suit))}</span>
           </li>`;
         }).join('');
@@ -417,7 +430,7 @@ function renderCardSlots() {
         </div>
         <div class="tcs-body">
           ${entry
-            ? `<div class="tcs-name">${escHtml(entry.card.name)}</div>
+            ? `<div class="tcs-name">${escHtml(getCardDisplayName(entry.card))}</div>
                <div class="tcs-suit">${escHtml(suitLabel)}</div>`
             : `<div class="tcs-empty">＋</div>`
           }
@@ -522,10 +535,12 @@ function fetchReading() {
   document.getElementById('reading-category-tag').textContent = appState.categoryLabel;
   document.getElementById('reading-formation-tag').textContent = lf(appState.formation).name;
 
+  const localizedFormation = Object.assign({}, appState.formation, lf(appState.formation));
   const payload = {
+    lang:      currentLang,
     category:  appState.categoryLabel,
     cards:     appState.selectedCards,
-    formation: appState.formation
+    formation: localizedFormation
   };
 
   getReadingFromBackend(payload)
