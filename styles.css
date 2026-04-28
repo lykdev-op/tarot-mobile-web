@@ -257,6 +257,39 @@ body::before {
 }
 .search-input::placeholder { color: var(--text-muted); font-style: italic; }
 
+/* ── QUESTION INPUT ─────────────────────────────────────────── */
+.question-wrapper {
+  margin-bottom: 1rem;
+}
+.question-label {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  color: var(--gold-dim);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+.question-input {
+  width: 100%;
+  background: var(--bg-card);
+  border: var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  padding: 0.65rem 0.9rem;
+  resize: vertical;
+  min-height: 56px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.question-input:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(201,168,76,0.1);
+}
+.question-input::placeholder { color: var(--text-muted); font-style: italic; }
+
 .search-results {
   position: absolute;
   top: calc(100% + 2px);
@@ -416,6 +449,28 @@ body::before {
   font-size: 1.8rem;
   color: rgba(201,168,76,0.1);
   line-height: 1;
+  transition: color 0.2s;
+}
+.tcs.active-slot {
+  outline: 1.5px solid var(--gold);
+  box-shadow: 0 0 10px rgba(201,168,76,0.25);
+}
+.tcs.active-slot .tcs-empty {
+  color: rgba(201,168,76,0.55);
+}
+.tcs {
+  cursor: pointer;
+}
+.tcs-edit-hint {
+  font-size: 0.52rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.tcs:hover .tcs-edit-hint,
+.tcs.active-slot .tcs-edit-hint {
+  opacity: 1;
 }
 .tcs-name {
   font-family: var(--font-heading);

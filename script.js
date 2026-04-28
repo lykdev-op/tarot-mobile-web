@@ -1,5 +1,5 @@
 // ── BACKEND ───────────────────────────────────────────────────────────────
-const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwSm05J9K1PAeM6uxmLOnSxoIB4hnfBqake-hTwaN-R6iguMOHLSZzjfOOxn99fxODc2g/exec";
+const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwxMfOTfeAS2CbzRaGQ8QWsVspMrxn_JsefyJMzoG_AxvU8zDv3-7KxlT-EVnsLRVVQKQ/exec";
 async function getReadingFromBackend(payload) {
   const response = await fetch(APPS_SCRIPT_WEB_APP_URL, {
     method: "POST",
@@ -51,6 +51,9 @@ const TRANSLATIONS = {
     oracle_silent: function(msg) { return '⚠ The Oracle is silent: ' + msg; },
     backend_unreachable: 'Backend unreachable.',
     suit_cups: 'Cups', suit_wands: 'Wands', suit_swords: 'Swords', suit_pentacles: 'Pentacles',
+    question_label: 'Your Question (optional)',
+    question_placeholder: 'Ask anything — or leave blank for a general reading based on your chosen topic',
+    click_to_edit: 'Tap to change card',
     category_labels: {
       general: 'General / Life Path', work: 'Work & Career',
       romance: 'Romantic Relationships', friends: 'Friendships',
@@ -66,7 +69,7 @@ const TRANSLATIONS = {
     }
   },
   'zh-TW': {
-    page1_title: '神諭恺候',
+    page1_title: '神諭邂逅',
     page1_subtitle: '選擇您的詢問領域',
     cat_general_label: '通用',     cat_general_sub: '人生道路',
     cat_work_label: '工作',        cat_work_sub: '事業與抱負',
@@ -84,7 +87,7 @@ const TRANSLATIONS = {
     back_to_cards: '返回選牌',
     page3_title: '神諭降臨',
     page3_subtitle: '牌已落定，靈魂正在悌動。',
-    oracle_stirs: '神諭正在繌醒…',
+    oracle_stirs: '神諭正在覺醒…',
     end_divider: '─ 終 ─',
     ask_again: '✦ 再次問神諭',
     choose_spread: '選擇您的牌陣',
@@ -95,7 +98,7 @@ const TRANSLATIONS = {
     select_all_cards: function(n)       { return '請選擇全部 ' + n + ' 張牌以繼續'; },
     major_arcana: '大阿爾克那',
     reversed_banner: '↕ 逆位',
-    reversed_tap:    '↕ 逆位 — 黭e擊轉為正位',
+    reversed_tap:    '↕ 逆位 — 轉為正位',
     mark_reversed:   '↕ 標記為逆位',
     remove_card: '✕ 移除牌',
     position:    function(n) { return '位置 ' + n; },
@@ -104,6 +107,9 @@ const TRANSLATIONS = {
     oracle_silent: function(msg) { return '⚠ 神諭沉默：' + msg; },
     backend_unreachable: '後端無法連接。',
     suit_cups: '聖盃', suit_wands: '權杖', suit_swords: '寶劍', suit_pentacles: '錢幣',
+    question_label: '您的問題（選填）',
+    question_placeholder: '輸入您的問題，或留空做一般解讀',
+    click_to_edit: '點擊更換牌',
     category_labels: {
       general: '通用 / 人生道路', work: '工作與事業',
       romance: '浪漫關係', friends: '友誼',
@@ -147,6 +153,10 @@ function applyI18n() {
   });
   const searchInput = document.getElementById('card-search');
   if (searchInput) searchInput.placeholder = t('search_placeholder');
+  const qInput = document.getElementById('user-question');
+  if (qInput) qInput.placeholder = t('question_placeholder');
+  const qLabel = document.getElementById('question-label');
+  if (qLabel) qLabel.textContent = t('question_label');
   document.querySelectorAll('.lang-btn').forEach(function(btn) {
     btn.classList.toggle('active', btn.dataset.lang === currentLang);
   });
@@ -197,8 +207,10 @@ const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X'];
 const appState = {
   category: '',
   categoryLabel: '',
-  selectedCards: [],
+  selectedCards: Array(FORMATIONS[1].cardCount).fill(null),
   formation: FORMATIONS[1],
+  activeSlot: null,
+  userQuestion: '',
   maxCards: 10
 };
 
@@ -284,12 +296,17 @@ function navigateTo(pageNum, category, fromPopState) {
 
   if (pageNum === 2) {
     document.getElementById('context-category-label').textContent = appState.categoryLabel;
+    appState.activeSlot = null;
     updateFormationDisplay();
     renderCardSlots();
     updateCardStatus();
     updateSubmitButton();
     document.getElementById('card-search').value = '';
     document.getElementById('search-results').classList.remove('open');
+    const qInput = document.getElementById('user-question');
+    if (qInput) qInput.placeholder = t('question_placeholder');
+    const qLabel = document.getElementById('question-label');
+    if (qLabel) qLabel.textContent = t('question_label');
   }
 
   if (pageNum === 3) {
@@ -382,19 +399,25 @@ function initSearch() {
 
 // ── CARD MANAGEMENT ───────────────────────────────────────────────────────
 function addCard(card) {
-  const maxSlots = appState.formation.cardCount;
-  if (appState.selectedCards.length >= maxSlots) {
-    showToast(t('slots_filled', maxSlots));
+  const slots = appState.selectedCards;
+  let targetIdx = appState.activeSlot;
+  if (targetIdx === null) {
+    targetIdx = slots.findIndex(s => s === null);
+  }
+  if (targetIdx === -1 || targetIdx === null) {
+    showToast(t('slots_filled', appState.formation.cardCount));
     return;
   }
-  appState.selectedCards.push({ card: card, reversed: false });
+  slots[targetIdx] = { card: card, reversed: false };
+  appState.activeSlot = null;
   renderCardSlots();
   updateCardStatus();
   updateSubmitButton();
 }
 
 function removeCard(idx) {
-  appState.selectedCards.splice(idx, 1);
+  appState.selectedCards[idx] = null;
+  if (appState.activeSlot === idx) appState.activeSlot = null;
   renderCardSlots();
   updateCardStatus();
   updateSubmitButton();
@@ -403,6 +426,22 @@ function removeCard(idx) {
 function toggleReversed(idx) {
   appState.selectedCards[idx].reversed = !appState.selectedCards[idx].reversed;
   renderCardSlots();
+}
+
+function setActiveSlot(idx) {
+  appState.activeSlot = (appState.activeSlot === idx) ? null : idx;
+  renderCardSlots();
+  if (appState.activeSlot !== null) {
+    const input = document.getElementById('card-search');
+    input.value = '';
+    input.focus();
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function slotClick(idx, event) {
+  if (event.target.closest('button')) return;
+  setActiveSlot(idx);
 }
 
 // ── RENDER CARD SLOTS ─────────────────────────────────────────────────────
@@ -420,8 +459,9 @@ function renderCardSlots() {
     const roman = ROMAN[i] || String(i + 1);
     const rev = entry && entry.reversed;
     const suitLabel = entry ? getSuitLabel(entry.card.suit) : '';
+    const isActive = appState.activeSlot === i;
 
-    html += `<div class="tcs" data-slot="${i}">
+    html += `<div class="tcs${isActive ? ' active-slot' : ''}" data-slot="${i}" onclick="slotClick(${i}, event)">
       <div class="tcs-inner${rev ? ' reversed' : ''}">
         <div class="tcs-rev-banner">${t('reversed_banner')}</div>
         <div class="tcs-header">
@@ -431,8 +471,9 @@ function renderCardSlots() {
         <div class="tcs-body">
           ${entry
             ? `<div class="tcs-name">${escHtml(getCardDisplayName(entry.card))}</div>
-               <div class="tcs-suit">${escHtml(suitLabel)}</div>`
-            : `<div class="tcs-empty">＋</div>`
+               <div class="tcs-suit">${escHtml(suitLabel)}</div>
+               <div class="tcs-edit-hint">${escHtml(t('click_to_edit'))}</div>`
+            : `<div class="tcs-empty">${isActive ? '✦' : '＋'}</div>`
           }
         </div>
         ${entry ? `
@@ -451,7 +492,7 @@ function renderCardSlots() {
 
 function updateCardStatus() {
   const el = document.getElementById('cards-status');
-  const count = appState.selectedCards.length;
+  const count = appState.selectedCards.filter(c => c !== null).length;
   const total = appState.formation.cardCount;
   el.textContent = t('cards_selected', count, total);
   el.className = 'cards-status' + (count === total ? ' complete' : '');
@@ -459,7 +500,7 @@ function updateCardStatus() {
 
 function updateSubmitButton() {
   const btn = document.getElementById('submit-reading-btn');
-  const ready = appState.selectedCards.length === appState.formation.cardCount;
+  const ready = appState.selectedCards.every(c => c !== null);
   btn.disabled = !ready;
   btn.textContent = ready ? t('consult_oracle') : t('select_all_cards', appState.formation.cardCount);
 }
@@ -499,10 +540,10 @@ function closeFormationModal() {
 function selectFormation(id) {
   const f = FORMATIONS.find(x => x.id === id);
   if (!f) return;
+  const old = appState.selectedCards;
   appState.formation = f;
-  if (appState.selectedCards.length > f.cardCount) {
-    appState.selectedCards = appState.selectedCards.slice(0, f.cardCount);
-  }
+  appState.selectedCards = Array.from({ length: f.cardCount }, (_, i) => (i < old.length ? old[i] : null));
+  appState.activeSlot = null;
   document.querySelectorAll('.formation-option').forEach(el => {
     el.classList.toggle('selected', el.dataset.id === id);
   });
@@ -519,7 +560,8 @@ function updateFormationDisplay() {
 
 // ── READING ───────────────────────────────────────────────────────────────
 function submitReading() {
-  if (appState.selectedCards.length !== appState.formation.cardCount) return;
+  if (!appState.selectedCards.every(c => c !== null)) return;
+  appState.userQuestion = (document.getElementById('user-question') || {}).value || '';
   navigateTo(3);
 }
 
@@ -537,9 +579,10 @@ function fetchReading() {
 
   const localizedFormation = Object.assign({}, appState.formation, lf(appState.formation));
   const payload = {
-    lang:      currentLang,
-    category:  appState.categoryLabel,
-    cards:     appState.selectedCards.map(function(entry) {
+    lang:         currentLang,
+    category:     appState.categoryLabel,
+    userQuestion: appState.userQuestion.trim() || null,
+    cards:        appState.selectedCards.map(function(entry) {
       return {
         reversed: entry.reversed,
         card: Object.assign({}, entry.card, {
@@ -567,8 +610,12 @@ function fetchReading() {
 function resetApp() {
   appState.category = '';
   appState.categoryLabel = '';
-  appState.selectedCards = [];
   appState.formation = FORMATIONS[1];
+  appState.selectedCards = Array(FORMATIONS[1].cardCount).fill(null);
+  appState.activeSlot = null;
+  appState.userQuestion = '';
+  const q = document.getElementById('user-question');
+  if (q) q.value = '';
   navigateTo(1);
 }
 
