@@ -244,33 +244,7 @@
 
     <div class="page2-inner">
 
-      <!-- Search -->
-      <div class="search-wrapper">
-        <label class="search-label" for="card-search" data-i18n="search_label">Search &amp; Add a Card</label>
-        <input
-          type="text"
-          id="card-search"
-          class="search-input"
-          placeholder="Type a card name, suit, or number (e.g. 3, cups, three of swords…)"
-          autocomplete="off"
-          spellcheck="false"
-        >
-        <ul id="search-results" class="search-results" role="listbox"></ul>
-      </div>
-
-      <!-- Optional question input -->
-      <div class="question-wrapper">
-        <label id="question-label" class="question-label" for="user-question">Your Question (optional)</label>
-        <textarea
-          id="user-question"
-          class="question-input"
-          rows="2"
-          placeholder="Ask anything — or leave blank for a general reading based on your chosen topic"
-          spellcheck="false"
-        ></textarea>
-      </div>
-
-      <!-- Formation bar -->
+      <!-- Formation bar — first, so users know how many slots they're filling -->
       <div class="formation-bar">
         <div class="formation-info">
           <span class="formation-bar-label" data-i18n="current_spread">Current Spread</span>
@@ -282,8 +256,37 @@
       <!-- Card slots grid -->
       <div id="card-slots" class="card-slots"></div>
 
-      <!-- Status + submit -->
+      <!-- Progress status -->
       <p class="cards-status" id="cards-status">0 / 3 cards selected</p>
+
+      <!-- Search — below slots so users can see what they're filling -->
+      <div class="search-wrapper">
+        <div class="search-label-row">
+          <label class="search-label" for="card-search" data-i18n="search_label">Search &amp; Add a Card</label>
+          <span class="search-target-hint" id="search-target-hint"></span>
+        </div>
+        <input
+          type="text"
+          id="card-search"
+          class="search-input"
+          placeholder="Type a card name, suit, or number (e.g. 3, cups, three of swords…)"
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <ul id="search-results" class="search-results" role="listbox"></ul>
+      </div>
+
+      <!-- Optional question — at bottom so it doesn't interrupt the picking flow -->
+      <div class="question-wrapper">
+        <label id="question-label" class="question-label" for="user-question">Your Question (optional)</label>
+        <textarea
+          id="user-question"
+          class="question-input"
+          rows="2"
+          placeholder="Ask anything — or leave blank for a general reading based on your chosen topic"
+          spellcheck="false"
+        ></textarea>
+      </div>
 
       <button class="submit-btn" id="submit-reading-btn" onclick="submitReading()" disabled>
         Select All 3 Cards to Continue

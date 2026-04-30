@@ -165,6 +165,7 @@ function applyI18n() {
   updateCardStatus();
   updateFormationDisplay();
   updateSubmitButton();
+  updateSearchHint();
   if (appState.category) {
     appState.categoryLabel = TRANSLATIONS[currentLang].category_labels[appState.category] || appState.categoryLabel;
     const catLabel = document.getElementById('context-category-label');
@@ -296,11 +297,13 @@ function navigateTo(pageNum, category, fromPopState) {
 
   if (pageNum === 2) {
     document.getElementById('context-category-label').textContent = appState.categoryLabel;
-    appState.activeSlot = null;
+    const firstEmpty = appState.selectedCards.findIndex(s => s === null);
+    appState.activeSlot = firstEmpty >= 0 ? firstEmpty : null;
     updateFormationDisplay();
     renderCardSlots();
     updateCardStatus();
     updateSubmitButton();
+    updateSearchHint();
     document.getElementById('card-search').value = '';
     document.getElementById('search-results').classList.remove('open');
     const qInput = document.getElementById('user-question');
@@ -408,19 +411,37 @@ function addCard(card) {
     showToast(t('slots_filled', appState.formation.cardCount));
     return;
   }
+
+  const posLabel = lf(appState.formation).positions[targetIdx] || t('position', targetIdx + 1);
   slots[targetIdx] = { card: card, reversed: false };
-  appState.activeSlot = null;
+
+  // advance to next empty slot
+  const nextEmpty = slots.findIndex(s => s === null);
+  appState.activeSlot = nextEmpty >= 0 ? nextEmpty : null;
+
   renderCardSlots();
   updateCardStatus();
   updateSubmitButton();
+  updateSearchHint();
+
+  showToast('✦ ' + getCardDisplayName(card) + '  →  ' + posLabel);
+
+  if (nextEmpty < 0) {
+    // all slots filled — scroll to submit
+    setTimeout(function() {
+      const btn = document.getElementById('submit-reading-btn');
+      if (btn) btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 400);
+  }
 }
 
 function removeCard(idx) {
   appState.selectedCards[idx] = null;
-  if (appState.activeSlot === idx) appState.activeSlot = null;
+  appState.activeSlot = idx;
   renderCardSlots();
   updateCardStatus();
   updateSubmitButton();
+  updateSearchHint();
 }
 
 function toggleReversed(idx) {
@@ -428,14 +449,28 @@ function toggleReversed(idx) {
   renderCardSlots();
 }
 
+function updateSearchHint() {
+  const hint = document.getElementById('search-target-hint');
+  if (!hint) return;
+  if (appState.activeSlot !== null) {
+    const posLabel = lf(appState.formation).positions[appState.activeSlot] || t('position', appState.activeSlot + 1);
+    hint.textContent = '→ ' + posLabel;
+    hint.classList.add('visible');
+  } else {
+    hint.textContent = '';
+    hint.classList.remove('visible');
+  }
+}
+
 function setActiveSlot(idx) {
   appState.activeSlot = (appState.activeSlot === idx) ? null : idx;
   renderCardSlots();
+  updateSearchHint();
   if (appState.activeSlot !== null) {
     const input = document.getElementById('card-search');
     input.value = '';
     input.focus();
-    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.querySelector('.search-wrapper').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 }
 
@@ -544,6 +579,8 @@ function selectFormation(id) {
   appState.formation = f;
   appState.selectedCards = Array.from({ length: f.cardCount }, (_, i) => (i < old.length ? old[i] : null));
   appState.activeSlot = null;
+  const firstEmpty = appState.selectedCards.findIndex(s => s === null);
+  appState.activeSlot = firstEmpty >= 0 ? firstEmpty : null;
   document.querySelectorAll('.formation-option').forEach(el => {
     el.classList.toggle('selected', el.dataset.id === id);
   });
@@ -551,6 +588,7 @@ function selectFormation(id) {
   renderCardSlots();
   updateCardStatus();
   updateSubmitButton();
+  updateSearchHint();
   closeFormationModal();
 }
 

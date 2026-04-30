@@ -229,14 +229,30 @@ body::before {
 /* ── SEARCH DROPDOWN ────────────────────────────────────────── */
 .search-wrapper {
   position: relative;
+  margin-top: 1.25rem;
 }
+.search-label-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+.search-target-hint {
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+  opacity: 0;
+  transition: opacity 0.25s;
+  white-space: nowrap;
+}
+.search-target-hint.visible { opacity: 1; }
 .search-label {
   font-family: var(--font-heading);
   font-size: 0.7rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-secondary);
-  margin-bottom: 0.5rem;
   display: block;
 }
 .search-input {
@@ -259,7 +275,10 @@ body::before {
 
 /* ── QUESTION INPUT ─────────────────────────────────────────── */
 .question-wrapper {
+  margin-top: 1.25rem;
   margin-bottom: 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(201,168,76,0.1);
 }
 .question-label {
   display: block;
@@ -445,28 +464,37 @@ body::before {
   gap: 0.25rem;
   text-align: center;
 }
+@keyframes slot-pulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(201,168,76,0.2); }
+  50%       { box-shadow: 0 0 16px rgba(201,168,76,0.45); }
+}
 .tcs-empty {
   font-size: 1.8rem;
-  color: rgba(201,168,76,0.1);
+  color: rgba(201,168,76,0.12);
   line-height: 1;
-  transition: color 0.2s;
-}
-.tcs.active-slot {
-  outline: 1.5px solid var(--gold);
-  box-shadow: 0 0 10px rgba(201,168,76,0.25);
-}
-.tcs.active-slot .tcs-empty {
-  color: rgba(201,168,76,0.55);
+  transition: color 0.25s, font-size 0.15s;
 }
 .tcs {
   cursor: pointer;
+  transition: transform 0.15s;
+}
+.tcs:hover { transform: translateY(-1px); }
+.tcs.active-slot {
+  outline: 1.5px solid var(--gold);
+  animation: slot-pulse 1.6s ease-in-out infinite;
+  border-radius: var(--radius);
+}
+.tcs.active-slot .tcs-empty {
+  color: rgba(201,168,76,0.6);
+  font-size: 2rem;
 }
 .tcs-edit-hint {
-  font-size: 0.52rem;
+  font-size: 0.5rem;
   color: var(--text-muted);
   letter-spacing: 0.05em;
   opacity: 0;
   transition: opacity 0.2s;
+  padding-top: 0.15rem;
 }
 .tcs:hover .tcs-edit-hint,
 .tcs.active-slot .tcs-edit-hint {
@@ -639,6 +667,7 @@ body::before {
 
 /* ── CARDS STATUS + SUBMIT ──────────────────────────────────── */
 .cards-status {
+  margin-top: 0.75rem;
   font-family: var(--font-heading);
   font-size: 0.7rem;
   letter-spacing: 0.1em;
